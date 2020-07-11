@@ -10,7 +10,7 @@ app = Quart(__name__)
 
 PROJECT_KEY_TEMPLATE = "{project}.{date}"
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost")
-HEADER_KEYS_TO_STORE = ["Remote-Addr", "Host", "User-Agent"]
+HEADER_KEYS_TO_STORE = ["Remote-Addr", "Host", "User-Agent", "Referer"]
 
 
 @app.route("/")
@@ -29,12 +29,15 @@ async def counter():
     date = str(datetime.datetime.now())
 
     await save_view(request.headers, project_id, date)
-    return ""
+    return "Every request counts"
 
 
 async def save_view(request_headers, project_id, date):
-    key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
-    value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
-
     redis_connection = await aioredis.create_redis(REDIS_URL)
-    await redis_connection.set(key, value)
+    domain_name = await redis_connection.get("project.{project_id}")
+    referer = request_headers.get("Referer", "")
+    if domain_name and domain_name in referer:
+        key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
+        value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
+
+        await redis_connection.set(key, value)
