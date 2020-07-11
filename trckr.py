@@ -34,9 +34,7 @@ async def counter():
 
 async def save_view(request_headers, project_id, date):
     redis_connection = await aioredis.create_redis(REDIS_URL)
-    domain_name = await redis_connection.get("project.{project_id}")
-    referer = request_headers.get("Referer", "")
-    if domain_name and domain_name in referer:
+    if await redis_connection.get(f"project.{project_id}"):
         key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
         value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
 
