@@ -10,7 +10,7 @@ app = Quart(__name__)
 
 PROJECT_KEY_TEMPLATE = "{project}.{date}"
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost")
-HEADER_KEYS_TO_STORE = ["Remote-Addr", "Host", "User-Agent", "Referer"]
+HEADER_KEYS_TO_STORE = ["Remote-Addr", "Host", "User-Agent"]
 
 
 @app.route("/")
@@ -34,8 +34,7 @@ async def counter():
 
 async def save_view(request_headers, project_id, date):
     redis_connection = await aioredis.create_redis(REDIS_URL)
-    if await redis_connection.get(f"project.{project_id}"):
-        key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
-        value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
+    key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
+    value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
 
-        await redis_connection.set(key, value)
+    await redis_connection.set(key, value)
