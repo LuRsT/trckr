@@ -1,3 +1,4 @@
+import os
 import datetime
 import asyncio
 import aioredis
@@ -5,10 +6,9 @@ import redis
 from quart import Quart, request
 
 app = Quart(__name__)
-sr = redis.StrictRedis(host="localhost", port=6379)
 
 PROJECT_KEY_TEMPLATE = "{project}.{date}"
-REDIS_URL = "redis://localhost"
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost")
 HEADER_KEYS_TO_STORE = ["Remote-Addr", "Host", "User-Agent"]
 
 
