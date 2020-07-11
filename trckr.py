@@ -1,6 +1,7 @@
-import os
-import datetime
 import asyncio
+import datetime
+import os
+
 import aioredis
 import redis
 from quart import Quart, request
@@ -20,7 +21,11 @@ async def index():
 @app.route("/counter.js")
 async def counter():
     await request.get_data()
-    project_id = request.query_string.decode().split("=")[1]
+    try:
+        project_id = request.query_string.decode().split("=")[1]
+    except Exception:
+        return "Counter not configured correctly. URL is counter.js?id=<PROJECTID>"
+
     date = str(datetime.datetime.now())
 
     await save_view(request.headers, project_id, date)
