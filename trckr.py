@@ -38,7 +38,3 @@ async def save_view(request_headers, project_id, date):
 
     redis_connection = await aioredis.create_redis(REDIS_URL)
     await redis_connection.set(key, value)
-
-
-if __name__ == "__main__":
-    app.run("localhost", port=5000, debug=True)
