@@ -1,9 +1,7 @@
-import asyncio
 import datetime
 import os
 
 import aioredis
-import redis
 from quart import Quart, request
 
 app = Quart(__name__)
@@ -18,7 +16,7 @@ async def index():
     return "Nothing to see here."
 
 
-@app.route("/counter.js")
+@app.route("/counter.txt")
 async def counter():
     await request.get_data()
     try:
