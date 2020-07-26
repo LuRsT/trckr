@@ -27,7 +27,7 @@ async def counter():
     date = str(datetime.datetime.now())
 
     await save_view(request.headers, project_id, date)
-    return "Every request counts"
+    return "Every request counts", {"Content-Type": "text/plain"}
 
 
 async def save_view(request_headers, project_id, date):
