@@ -11,6 +11,13 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost")
 HEADER_KEYS_TO_STORE = ["Remote-Addr", "Host", "User-Agent"]
 
 
+def _get_redis():
+    """Returns the Redis client. Can be overridden via app.config['redis_client']."""
+    if "redis_client" in app.config:
+        return app.config["redis_client"]
+    return aioredis.from_url(REDIS_URL)
+
+
 @app.route("/")
 async def index():
     return "Nothing to see here."
@@ -18,11 +25,9 @@ async def index():
 
 @app.route("/counter.txt")
 async def counter():
-    await request.get_data()
-    try:
-        project_id = request.query_string.decode().split("=")[1]
-    except Exception:
-        return "Counter not configured correctly. URL is counter.js?id=<PROJECTID>"
+    project_id = request.args.get("id")
+    if not project_id:
+        return "Counter not configured correctly. URL is counter.txt?id=<PROJECTID>"
 
     date = str(datetime.datetime.now())
 
@@ -31,8 +36,8 @@ async def counter():
 
 
 async def save_view(request_headers, project_id, date):
-    redis_connection = aioredis.from_url(REDIS_URL)
+    redis_connection = _get_redis()
     key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
-    value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
+    value = ",".join([request_headers.get(k) for k in HEADER_KEYS_TO_STORE])
 
     await redis_connection.set(key, value)

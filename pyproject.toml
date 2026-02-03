@@ -9,3 +9,10 @@ dependencies = [
     "quart>=0.20.0",
     "redis>=7.1.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "ruff>=0.15.0",
+]
