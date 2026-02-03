@@ -1,7 +1,7 @@
 import datetime
 import os
 
-import aioredis
+import redis.asyncio as aioredis
 from quart import Quart, request
 
 app = Quart(__name__)
@@ -31,7 +31,7 @@ async def counter():
 
 
 async def save_view(request_headers, project_id, date):
-    redis_connection = await aioredis.create_redis(REDIS_URL)
+    redis_connection = aioredis.from_url(REDIS_URL)
     key = PROJECT_KEY_TEMPLATE.format(project=project_id, date=date)
     value = ",".join([request_headers.get(key) for key in HEADER_KEYS_TO_STORE])
 

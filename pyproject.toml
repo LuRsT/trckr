@@ -1,0 +1,11 @@
+[project]
+name = "trckr"
+version = "0.1.0"
+description = "A minimalist traffic analyser"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "hypercorn>=0.18.0",
+    "quart>=0.20.0",
+    "redis>=7.1.0",
+]

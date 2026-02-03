@@ -1,0 +1,12 @@
+services:
+  trckr:
+    build: .
+    depends_on:
+      - redis
+    ports:
+      - 8000:8000
+    environment:
+      - REDIS_URL=redis://redis
+
+  redis:
+    image: redis
